@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // load all tasks
+            let taskCounter = 0;
+            let taskList = document.querySelector('#task-list');
+            fetch('https://todolist223.herokuapp.com/task')
+            .then(reponse => reponse.json())
+            .then(data => {
+                data.forEach((data) => {
+                    let li = document.createElement('li');
+                    li.innerHTML = data.taskName;
+                    taskList.append(li);
+                    taskCounter++;
+                });
+            });
+            // add new tasks
+            let newTask = document.querySelector('#new-task');
+            newTask.addEventListener('submit', () => {
+                let task = document.querySelector('#task');
+                if (task.value !== "")
+                {
+                    const data = {"id": taskCounter + 1, "taskName": `${task.value}`};
+                    fetch('https://todolist223.herokuapp.com/task',
+                    {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json',},
+                        body: JSON.stringify(data),
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Success:', data);
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                    });
+                }
+                return false;
+            });
+        });
+    </script>
+</head>
+<body>
+    <h1>Tasks</h1>
+    <div>
+        <ul id="task-list">
+        </ul>
+    </div>
+    <form id="new-task">
+        <input autofocus placeholder="New Task" id="task"/>
+        <button type="submit">Add Task</button>
+    </form>
+</body>
+</html>
